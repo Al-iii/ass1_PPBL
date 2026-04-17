@@ -112,14 +112,14 @@ class DashboardScreen extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              // --- GRID MENU ---
+// --- GRID MENU (SUDAH DIPERBAIKI) ---
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2, // 2 kolom menyamping
                     crossAxisSpacing: 15, // Jarak antar kolom
                     mainAxisSpacing: 15, // Jarak antar baris
-                    childAspectRatio: 1.1, // Proporsi kotak (sedikit melebar)
+                    childAspectRatio: 1.1, // Proporsi kotak
                   ),
                   itemCount: menuItems.length,
                   itemBuilder: (context, index) {
@@ -130,7 +130,6 @@ class DashboardScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(
-                        // FUNGSI NAVIGASI: Pindah ke halaman yang dipilih saat diklik
                         onTap: () {
                           Navigator.push(
                             context,
@@ -145,7 +144,7 @@ class DashboardScreen extends StatelessWidget {
                               end: Alignment.bottomRight,
                               colors: [
                                 Colors.white,
-                                item['color'].withOpacity(0.1), // Efek gradasi tipis di ujung
+                                item['color'].withOpacity(0.1), 
                               ],
                             ),
                           ),
@@ -174,15 +173,15 @@ class DashboardScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                    );
+                    )
+                    // PERBAIKAN: Animasi dipasang di masing-masing Card
+                    .animate()
+                    // Menggunakan perhitungan delay (index * 100) agar muncul bergantian
+                    .slideY(begin: 0.3, end: 0, duration: 500.ms, curve: Curves.easeOutBack, delay: (index * 100).ms)
+                    .fadeIn(duration: 500.ms, delay: (index * 100).ms);
                   },
-                )
-                // ANIMASI DAFTAR MENU MUNCUL SATU-PERSATU
-                .animate(interval: 100.ms) // Jeda antar kemunculan kotak
-                .slideY(begin: 0.3, end: 0, duration: 500.ms, curve: Curves.easeOutBack)
-                .fadeIn(duration: 500.ms),
-              ),
-              
+                ),
+              ),             
             ],
           ),
         ),
