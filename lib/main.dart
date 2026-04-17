@@ -1,277 +1,188 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+// --- IMPORT SEMUA HALAMAN DI SINI ---
+// Pastikan nama file-nya sesuai dengan yang mas buat di folder screens
+import 'screens/quiz_screen.dart';
+import 'screens/breathe_screen.dart';
+import 'screens/pomodoro_screen.dart';
+import 'screens/player_screen.dart';
+import 'screens/weather_screen.dart';
+import 'screens/task_list_screen.dart';
+
 void main() {
-  runApp(const QuizApp());
+  runApp(const PPBLPortfolioApp());
 }
 
-// --- DATA MODEL UNTUK SOAL ---
-class Question {
-  final String text;
-  final List<String> options;
-  final int correctIndex;
-
-  Question(this.text, this.options, this.correctIndex);
-}
-
-class QuizApp extends StatelessWidget {
-  const QuizApp({super.key});
+class PPBLPortfolioApp extends StatelessWidget {
+  const PPBLPortfolioApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Kuis Interaktif',
+      title: 'Portofolio PPBL',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         fontFamily: 'Roboto',
+        scaffoldBackgroundColor: Colors.grey[100],
       ),
-      home: const QuizScreen(),
+      home: const DashboardScreen(),
     );
   }
 }
 
-class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
-
-  @override
-  State<QuizScreen> createState() => _QuizScreenState();
-}
-
-class _QuizScreenState extends State<QuizScreen> {
-  // Daftar Soal
-  final List<Question> questions = [
-    Question(
-      "Framework apa yang sedang kita gunakan sekarang?",
-      ["React Native", "Flutter", "Ionic", "Xamarin"],
-      1, // Flutter
-    ),
-    Question(
-      "Bahasa pemrograman utama untuk Flutter adalah?",
-      ["Java", "Kotlin", "Dart", "Swift"],
-      2, // Dart
-    ),
-    Question(
-      "Widget yang ukurannya tidak bisa berubah setelah dirender disebut?",
-      ["StatefulWidget", "StatelessWidget", "Container", "Scaffold"],
-      1, // StatelessWidget
-    ),
-  ];
-
-  int currentIndex = 0;
-  int? selectedAnswerIndex;
-  bool isAnswered = false;
-
-  void _submitAnswer(int index) {
-    if (isAnswered) return; 
-    setState(() {
-      selectedAnswerIndex = index;
-      isAnswered = true;
-    });
-  }
-
-  void _nextQuestion() {
-    setState(() {
-      if (currentIndex < questions.length - 1) {
-        currentIndex++;
-        isAnswered = false;
-        selectedAnswerIndex = null;
-      } else {
-        currentIndex = 0;
-        isAnswered = false;
-        selectedAnswerIndex = null;
-      }
-    });
-  }
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final currentQ = questions[currentIndex];
-    final bool isCorrectAnswer = selectedAnswerIndex == currentQ.correctIndex;
+    // --- DAFTAR MENU APLIKASI ---
+    final List<Map<String, dynamic>> menuItems = [
+      {
+        'title': 'Kuis Interaktif',
+        'icon': Icons.lightbulb_outline,
+        'color': Colors.orangeAccent,
+        'page': const QuizScreen()
+      },
+      {
+        'title': 'Meditasi',
+        'icon': Icons.self_improvement,
+        'color': Colors.teal,
+        'page': const BreatheScreen()
+      },
+      {
+        'title': 'Jam Fokus',
+        'icon': Icons.timer_outlined,
+        'color': Colors.redAccent,
+        'page': const PomodoroScreen()
+      },
+      {
+        'title': 'Pemutar Musik',
+        'icon': Icons.music_note_rounded,
+        'color': Colors.pinkAccent,
+        'page': const PlayerScreen()
+      },
+      {
+        'title': 'Cuaca Dinamis',
+        'icon': Icons.cloud_outlined,
+        'color': Colors.lightBlue,
+        'page': const WeatherScreen()
+      },
+      {
+        'title': 'NotezQue To-Do',
+        'icon': Icons.check_box_outlined,
+        'color': Colors.indigo,
+        'page': const TaskListScreen()
+      },
+    ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text("Kuis Pemrograman", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text("Kumpulan Animasi PPBL", style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
+        elevation: 0,
         centerTitle: true,
       ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- BAGIAN KARTU SOAL (FINAL & KONSISTEN) ---
-              Container(
-                key: ValueKey<int>(currentIndex), 
-                height: 260, 
-                child: Stack(
-                  children: [
-                    
-                    // 1. KARTU BELAKANG (Hasil Benar/Salah)
-                    Positioned.fill( 
-                      child: Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: isCorrectAnswer ? Colors.green.shade50 : Colors.red.shade50,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: isCorrectAnswer ? Colors.green : Colors.red,
-                            width: 3,
-                          ),
-                          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              isCorrectAnswer ? Icons.check_circle : Icons.cancel,
-                              color: isCorrectAnswer ? Colors.green : Colors.red,
-                              size: 60,
-                            ),
-                            const SizedBox(height: 15),
-                            Text(
-                              isCorrectAnswer ? "Jawaban Anda Benar!" : "Jawaban Anda Salah!",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 22, 
-                                fontWeight: FontWeight.bold,
-                                color: isCorrectAnswer ? Colors.green.shade800 : Colors.red.shade800,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      // Logika Animasi Kartu Belakang
-                      // API 1: animate() - Method inisialisasi awal animasi
-                      // API 2: target - Properti untuk mengontrol arah animasi (maju/mundur) berdasarkan state
-                      .animate(target: isAnswered ? 1 : 0)
-                      // API 3: fadeIn() - Efek memudar dari transparan menjadi terlihat jelas
-                      .fadeIn(delay: 300.ms, duration: 10.ms) 
-                      // API 4: flipH() - Efek memutar widget secara horizontal (3D)
-                      .flipH(begin: -0.25, end: 0, duration: 300.ms, delay: 300.ms, curve: Curves.easeOut), 
-                    ),
-
-                    // 2. KARTU DEPAN (Pertanyaan)
-                    Positioned.fill( 
-                      child: Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Pertanyaan ${currentIndex + 1}/${questions.length}",
-                              style: TextStyle(color: Colors.deepPurple[300], fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 15),
-                            Text(
-                              currentQ.text,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      )
-                      // Logika Animasi Kartu Depan
-                      .animate(target: isAnswered ? 1 : 0)
-                      .flipH(begin: 0, end: 0.25, duration: 300.ms, curve: Curves.easeIn)
-                      // API 5: then() - Method untuk menyambungkan antrean animasi agar berjalan berurutan
-                      .then() 
-                      // API 6: fadeOut() - Efek menghilang perlahan menjadi transparan
-                      .fadeOut(duration: 10.ms), 
-                    ),
-
-                  ],
-                ),
+              
+              const Text(
+                "Pilih Proyek",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.deepPurple),
               )
-              // Animasi saat soal baru muncul
               .animate()
-              .fadeIn(duration: 500.ms)
-              // API 7: slideY() - Efek menggeser widget secara vertikal (sumbu Y)
-              .slideY(begin: -0.2, end: 0, curve: Curves.easeOut),
+              .fadeIn(duration: 600.ms)
+              .slideX(begin: -0.2, end: 0, curve: Curves.easeOut),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 5),
+              
+              const Text(
+                "Demonstrasi penggunaan flutter_animate",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              )
+              .animate()
+              .fadeIn(delay: 200.ms)
+              .slideX(begin: -0.2, end: 0, curve: Curves.easeOut),
 
-              // --- DAFTAR JAWABAN ---
-              Column(
-                key: ValueKey<int>(currentIndex + 100),
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: List.generate(currentQ.options.length, (index) {
-                  bool isSelected = selectedAnswerIndex == index;
-                  bool isCorrectBtn = index == currentQ.correctIndex;
+              const SizedBox(height: 30),
 
-                  Widget button = ElevatedButton(
-                    onPressed: isAnswered ? null : () => _submitAnswer(index),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.deepPurple,
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    ),
-                    child: Text(
-                      currentQ.options[index],
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                    ),
-                  );
-
-                  if (isAnswered) {
-                    if (isSelected && !isCorrectBtn) {
-                      button = button.animate()
-                        // API 8: shake() - Efek getaran cepat ke kiri dan kanan
-                        .shake(hz: 4, duration: 400.ms)
-                        // API 9: tint() - Efek menyapu/melapisi widget dengan warna tertentu
-                        .tint(color: Colors.red, end: 0.6);
-                    } else if (isCorrectBtn) {
-                      button = button.animate(delay: 200.ms)
-                        // API 10: scale() - Efek mengubah ukuran (membesar/mengecil)
-                        .scale(begin: const Offset(1, 1), end: const Offset(1.05, 1.05), duration: 300.ms)
-                        // API 11: shimmer() - Efek kilauan cahaya yang bergerak melintasi widget
-                        .shimmer(color: Colors.amber, duration: 1.seconds)
-                        .tint(color: Colors.green, end: 0.4);
-                    }
-                  }
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
-                    child: button,
-                  );
-                })
-                // API 12: interval - Properti khusus list untuk membuat animasi muncul bergantian (staggered delay)
-                .animate(interval: 150.ms)
-                .fadeIn(duration: 400.ms)
-                // API 13: slideX() - Efek menggeser widget secara horizontal (sumbu X)
-                .slideX(begin: 0.2, end: 0, curve: Curves.easeOut),
-              ),
-
-              const Spacer(),
-
-              // --- TOMBOL LANJUTKAN ---
-              if (isAnswered)
-                ElevatedButton(
-                  onPressed: _nextQuestion,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    backgroundColor: Colors.deepPurple,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              // --- GRID MENU ---
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, // 2 kolom menyamping
+                    crossAxisSpacing: 15, // Jarak antar kolom
+                    mainAxisSpacing: 15, // Jarak antar baris
+                    childAspectRatio: 1.1, // Proporsi kotak (sedikit melebar)
                   ),
-                  child: Text(
-                    currentIndex == questions.length - 1 ? "Ulangi Kuis" : "Soal Selanjutnya",
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                  itemCount: menuItems.length,
+                  itemBuilder: (context, index) {
+                    final item = menuItems[index];
+
+                    return Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        // FUNGSI NAVIGASI: Pindah ke halaman yang dipilih saat diklik
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => item['page']),
+                          );
+                        },
+                        splashColor: item['color'].withOpacity(0.3),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white,
+                                item['color'].withOpacity(0.1), // Efek gradasi tipis di ujung
+                              ],
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                  color: item['color'].withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(item['icon'], size: 40, color: item['color']),
+                              ),
+                              const SizedBox(height: 15),
+                              Text(
+                                item['title'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16, 
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[800]
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 )
-                .animate()
-                .slideY(begin: 1, end: 0, curve: Curves.easeOutBack)
-                .fadeIn(),
+                // ANIMASI DAFTAR MENU MUNCUL SATU-PERSATU
+                .animate(interval: 100.ms) // Jeda antar kemunculan kotak
+                .slideY(begin: 0.3, end: 0, duration: 500.ms, curve: Curves.easeOutBack)
+                .fadeIn(duration: 500.ms),
+              ),
+              
             ],
           ),
         ),
