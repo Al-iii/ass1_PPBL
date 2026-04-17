@@ -104,15 +104,15 @@ class _QuizScreenState extends State<QuizScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-// --- BAGIAN KARTU SOAL (FINAL & KONSISTEN) ---
+              // --- BAGIAN KARTU SOAL (FINAL & KONSISTEN) ---
               Container(
                 key: ValueKey<int>(currentIndex), 
-                height: 260, // KUNCI UTAMA: Kunci tinggi kartu di 260px agar tidak menciut saat dibalik
+                height: 260, 
                 child: Stack(
                   children: [
                     
                     // 1. KARTU BELAKANG (Hasil Benar/Salah)
-                    Positioned.fill( // KEMBALIKAN Positioned.fill agar mengisi penuh kotak 260px
+                    Positioned.fill( 
                       child: Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
@@ -146,13 +146,17 @@ class _QuizScreenState extends State<QuizScreen> {
                         ),
                       )
                       // Logika Animasi Kartu Belakang
+                      // API 1: animate() - Method inisialisasi awal animasi
+                      // API 2: target - Properti untuk mengontrol arah animasi (maju/mundur) berdasarkan state
                       .animate(target: isAnswered ? 1 : 0)
+                      // API 3: fadeIn() - Efek memudar dari transparan menjadi terlihat jelas
                       .fadeIn(delay: 300.ms, duration: 10.ms) 
+                      // API 4: flipH() - Efek memutar widget secara horizontal (3D)
                       .flipH(begin: -0.25, end: 0, duration: 300.ms, delay: 300.ms, curve: Curves.easeOut), 
                     ),
 
                     // 2. KARTU DEPAN (Pertanyaan)
-                    Positioned.fill( // KEMBALIKAN Positioned.fill agar mengisi penuh kotak 260px
+                    Positioned.fill( 
                       child: Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
@@ -179,7 +183,9 @@ class _QuizScreenState extends State<QuizScreen> {
                       // Logika Animasi Kartu Depan
                       .animate(target: isAnswered ? 1 : 0)
                       .flipH(begin: 0, end: 0.25, duration: 300.ms, curve: Curves.easeIn)
+                      // API 5: then() - Method untuk menyambungkan antrean animasi agar berjalan berurutan
                       .then() 
+                      // API 6: fadeOut() - Efek menghilang perlahan menjadi transparan
                       .fadeOut(duration: 10.ms), 
                     ),
 
@@ -189,11 +195,12 @@ class _QuizScreenState extends State<QuizScreen> {
               // Animasi saat soal baru muncul
               .animate()
               .fadeIn(duration: 500.ms)
+              // API 7: slideY() - Efek menggeser widget secara vertikal (sumbu Y)
               .slideY(begin: -0.2, end: 0, curve: Curves.easeOut),
 
               const SizedBox(height: 40),
 
-              // --- DAFTAR JAWABAN (TETAP SAMA) ---
+              // --- DAFTAR JAWABAN ---
               Column(
                 key: ValueKey<int>(currentIndex + 100),
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -219,11 +226,15 @@ class _QuizScreenState extends State<QuizScreen> {
                   if (isAnswered) {
                     if (isSelected && !isCorrectBtn) {
                       button = button.animate()
+                        // API 8: shake() - Efek getaran cepat ke kiri dan kanan
                         .shake(hz: 4, duration: 400.ms)
+                        // API 9: tint() - Efek menyapu/melapisi widget dengan warna tertentu
                         .tint(color: Colors.red, end: 0.6);
                     } else if (isCorrectBtn) {
                       button = button.animate(delay: 200.ms)
+                        // API 10: scale() - Efek mengubah ukuran (membesar/mengecil)
                         .scale(begin: const Offset(1, 1), end: const Offset(1.05, 1.05), duration: 300.ms)
+                        // API 11: shimmer() - Efek kilauan cahaya yang bergerak melintasi widget
                         .shimmer(color: Colors.amber, duration: 1.seconds)
                         .tint(color: Colors.green, end: 0.4);
                     }
@@ -234,14 +245,16 @@ class _QuizScreenState extends State<QuizScreen> {
                     child: button,
                   );
                 })
+                // API 12: interval - Properti khusus list untuk membuat animasi muncul bergantian (staggered delay)
                 .animate(interval: 150.ms)
                 .fadeIn(duration: 400.ms)
+                // API 13: slideX() - Efek menggeser widget secara horizontal (sumbu X)
                 .slideX(begin: 0.2, end: 0, curve: Curves.easeOut),
               ),
 
               const Spacer(),
 
-              // --- TOMBOL LANJUTKAN (TETAP SAMA) ---
+              // --- TOMBOL LANJUTKAN ---
               if (isAnswered)
                 ElevatedButton(
                   onPressed: _nextQuestion,
